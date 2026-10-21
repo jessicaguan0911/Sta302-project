@@ -10,7 +10,7 @@ Part 0 (teamwork agreement), Part 1 (proposal), Part 2 (poster + video) and Part
 
 | Role | Name | GitHub | UofT email |
 |---|---|---|---|
-| **A — Data Lead & Submitter** | | | |
+| **A — Data Lead & Submitter** | Jessica Guan | @jessicaguan0911 | |
 | **B — Literature & Intro Lead** | | | |
 | **C — Modelling & Diagnostics Lead** | | | |
 | **D — EDA, Ethics & Plan Lead** | | | |

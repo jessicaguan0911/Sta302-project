@@ -1,7 +1,7 @@
 ---
 title: "TITLE: <response> and <predictors> — a linear regression proposal"
 subtitle: "STA302 Final Project Part 1 — Group # ___"
-author: "A ______, B ______, C ______, D ______"
+author: "Jessica Guan, B ______, C ______, D ______"
 date: "November 5, 2026"
 output:
   pdf_document:
@@ -41,7 +41,7 @@ write_csv(clean, "../data/clean/clean_data.csv")
 
 <!-- Not counted in the word limit. Be specific. -->
 
-- **A ______** —
+- **Jessica Guan (A)** — 
 - **B ______** —
 - **C ______** —
 - **D ______** —

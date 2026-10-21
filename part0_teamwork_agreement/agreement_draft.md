@@ -21,7 +21,7 @@ Suggested answers are pre-filled — edit anything the group doesn't agree with.
 - Read the meeting notes (posted in the repo / chat within 24 h) and reply to confirm any tasks given to you.
 
 **4. Roles and division of work** (details in `TEAM_PLAN.md`)
-- A ______ — Data Lead & Submitter: dataset, cleaning, OneDrive, Data description section, final submission
+- A Jessica Guan — Data Lead & Submitter: dataset, cleaning, OneDrive, Data description section, final submission
 - B ______ — Literature & Intro Lead: research question, 3 papers, Introduction, bibliography
 - C ______ — Modelling & Diagnostics Lead: preliminary model, residual analysis, Preliminary results section
 - D ______ — EDA, Ethics & Plan Lead: summary table, interaction figure, Ethics + Plan sections, this agreement
