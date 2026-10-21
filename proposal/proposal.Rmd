@@ -1,0 +1,187 @@
+---
+title: "TITLE: <response> and <predictors> — a linear regression proposal"
+subtitle: "STA302 Final Project Part 1 — Group # ___"
+author: "A ______, B ______, C ______, D ______"
+date: "November 5, 2026"
+output:
+  pdf_document:
+    number_sections: true
+bibliography: references.bib
+csl: https://www.zotero.org/styles/apa
+---
+
+```{r setup, include=FALSE}
+# No R code or raw output may appear in the PDF (only plots / formatted tables).
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.align = "center", fig.pos = "H")
+library(tidyverse)
+library(knitr)
+library(patchwork)
+
+# Flip to TRUE once the raw data is in data/raw/ (A).
+DATA_READY <- FALSE
+knitr::opts_chunk$set(eval = DATA_READY)
+```
+
+```{r load-clean}
+# ===== A: data cleaning =====
+# Read the untouched download, subset/rename/recode, and write the cleaned copy.
+raw <- read_csv("../data/raw/RAW_FILE_NAME.csv")
+
+clean <- raw %>%
+  # select(response, x1, x2, ...) %>%
+  # rename(...) %>%
+  # mutate(cat_var = factor(cat_var)) %>%
+  drop_na()
+
+write_csv(clean, "../data/clean/clean_data.csv")
+```
+
+# Contributions {-}
+
+<!-- Not counted in the word limit. Be specific. -->
+
+- **A ______** —
+- **B ______** —
+- **C ______** —
+- **D ______** —
+
+<!-- ===== B START: Introduction (max 400 words) ===== -->
+# Introduction
+
+*Research question.* <!-- Response defined clearly; predictors named explicitly. -->
+
+*Why a linear model.* <!-- vs a simpler technique; which output answers the question: coefficient / CI / p-value / prediction. -->
+
+*Literature.* <!-- Organise by theme, not one paragraph per paper. What each says about response ↔ predictors. The gap we fill. e.g. [@key2020] -->
+
+*Who benefits.*
+<!-- ===== B END ===== -->
+
+<!-- ===== A START: Data description (max 300 words; D's table + figure live here too) ===== -->
+# Data Description
+
+*Source and original collection.* <!-- Where found [@dataset]; how and why the curator collected it. -->
+
+*Response variable.* <!-- Summary; reasonably continuous? observations independent? -->
+
+<!-- ===== A END ===== -->
+
+<!-- ===== D START: summary table + interaction figure ===== -->
+```{r summary-table}
+# ===== D: one row per variable in the preliminary model =====
+num_summary <- clean %>%
+  select(where(is.numeric)) %>%
+  pivot_longer(everything(), names_to = "Variable") %>%
+  group_by(Variable) %>%
+  summarise(Mean = mean(value), SD = sd(value), Min = min(value),
+            Median = median(value), Max = max(value), Missing = sum(is.na(value)))
+
+kable(num_summary, digits = 2,
+      caption = "Numerical summaries of the variables in the preliminary model. TODO: point out skews, outliers, nonsense values, missing values.")
+# TODO: add counts/proportions for each categorical variable (same table or a second panel).
+```
+
+```{r interaction-fig, fig.cap="TODO: response vs <numeric predictor>, coloured by <categorical predictor>. Non-parallel trends motivate the interaction term.", fig.height=3.5}
+# ===== D =====
+# ggplot(clean, aes(x = x_num, y = response, colour = x_cat)) +
+#   geom_point(alpha = 0.3) + geom_smooth(method = "lm", se = FALSE) +
+#   labs(x = "...", y = "...", colour = "...")
+```
+
+*Interaction choice.* <!-- Justify with literature and/or the figure above; justify cut points if a numeric variable was made categorical. -->
+<!-- ===== D END ===== -->
+
+<!-- ===== D START: Ethics (max 200 words) ===== -->
+# Ethics Discussion
+
+*Trustworthiness.* <!-- Who produced it, how variables were measured, documentation, accuracy/completeness — use module terms. -->
+
+*Ethical collection and use.* <!-- Consent, privacy, harms, population, original purpose — use module terms. -->
+<!-- ===== D END ===== -->
+
+<!-- ===== C START: Preliminary results (max 400 words INCLUDING captions) ===== -->
+# Preliminary Results
+
+```{r model}
+# ===== C: >= 9 predictors + 1 interaction (categorical x another variable) =====
+model <- lm(response ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x_cat:x_num,
+            data = clean)
+```
+
+```{r model-table}
+coefs <- broom::tidy(model, conf.int = TRUE)
+kable(coefs %>% select(term, estimate, std.error, conf.low, conf.high, p.value),
+      digits = 3,
+      col.names = c("Term", "Estimate", "SE", "95% CI lower", "95% CI upper", "p-value"),
+      caption = "Preliminary model estimates with standard errors and 95% confidence intervals.")
+```
+
+```{r conditions, fig.cap="Checking the conditions: (a) response vs fitted values; (b) pairwise scatterplots of the numeric predictors.", fig.height=3.5}
+# (a) Condition 1 — conditional mean response: points should scatter around one simple function.
+p_cond <- ggplot(tibble(fitted = fitted(model), y = model.response(model.frame(model))),
+                 aes(fitted, y)) +
+  geom_point(alpha = 0.3) + geom_abline(linetype = "dashed") +
+  labs(x = "Fitted values", y = "Response", title = "(a)")
+p_cond
+# (b) Condition 2 — conditional mean predictors: no curved relationships between predictors.
+# pairs(clean %>% select(where(is.numeric), -response))
+```
+
+```{r residual-plots, fig.cap="Residual plots for the preliminary model: (a) residuals vs fitted, (b–…) residuals vs each predictor, (last) normal QQ plot.", fig.height=6}
+res_df <- tibble(fitted = fitted(model), resid = resid(model)) %>%
+  bind_cols(model.frame(model) %>% select(-1))
+
+p_rf <- ggplot(res_df, aes(fitted, resid)) + geom_point(alpha = 0.3) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = "Fitted values", y = "Residuals", title = "(a)")
+
+# One residual-vs-predictor plot per predictor (boxplots for categorical ones).
+pred_names <- setdiff(names(res_df), c("fitted", "resid"))
+p_preds <- map(pred_names, function(v) {
+  g <- ggplot(res_df, aes(.data[[v]], resid)) + labs(x = v, y = "Residuals")
+  if (is.numeric(res_df[[v]])) g + geom_point(alpha = 0.3) + geom_hline(yintercept = 0, linetype = "dashed")
+  else g + geom_boxplot()
+})
+
+p_qq <- ggplot(res_df, aes(sample = resid)) + stat_qq(alpha = 0.3) + stat_qq_line() +
+  labs(x = "Theoretical quantiles", y = "Sample quantiles", title = "Normal QQ")
+
+wrap_plots(c(list(p_rf), p_preds, list(p_qq)), ncol = 3)
+```
+
+*Assumptions.* <!-- Linearity, uncorrelated errors, constant variance, normality: verdict + which panel shows it. DO NOT fix anything yet. -->
+
+*Model discussion.* <!-- Surprises in sign / size / significance compared with the literature (with B). -->
+<!-- ===== C END ===== -->
+
+<!-- ===== D START: Plan (max 300 words) ===== -->
+# Plan
+
+*Choosing predictors.* <!-- Methods to reduce/increase predictors; role of literature/context; predictors we must keep and why. -->
+
+*Assumptions and transformations.* <!-- When/how often re-checked; which transformations (e.g. Box-Cox / log on a skewed response) and why, tied to the plots above. -->
+
+*Team schedule.* <!-- Gantt chart with dates and names: analysis, poster, video. -->
+
+```{r gantt, fig.cap="Team plan for the rest of the term.", fig.height=2.8, eval=TRUE}
+gantt <- tribble(
+  ~task,                                  ~who,      ~start,       ~end,
+  "Fix assumption violations",            "A",       "2026-11-09", "2026-11-15",
+  "Variable selection & diagnostics",     "C",       "2026-11-16", "2026-11-22",
+  "Poster draft",                         "B, D",    "2026-11-23", "2026-11-27",
+  "Record & edit video",                  "All (D)", "2026-11-28", "2026-11-30",
+  "Final review & submit",                "All (A)", "2026-12-01", "2026-12-03"
+) %>% mutate(across(c(start, end), as.Date), task = fct_rev(fct_inorder(task)))
+
+ggplot(gantt, aes(y = task)) +
+  geom_segment(aes(x = start, xend = end, yend = task), linewidth = 6, colour = "steelblue") +
+  geom_text(aes(x = end, label = who), hjust = -0.15, size = 3) +
+  scale_x_date(date_labels = "%b %d", expand = expansion(mult = c(0.02, 0.12))) +
+  labs(x = NULL, y = NULL) + theme_minimal()
+```
+<!-- ===== D END ===== -->
+
+# Bibliography {-}
+
+<!-- Filled automatically from references.bib (APA). B owns this. -->
