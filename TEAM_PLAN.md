@@ -1,63 +1,81 @@
 # Team Plan & Division of Work
 
-Four leads, one per area. **"Lead" means you own the deliverable and its deadline — not that you
-do it alone.** Every piece of writing gets reviewed by one other member before it is merged
-(review pairs below), so everybody touches every section at least once.
+## 0. Project at a glance
+
+| | |
+|---|---|
+| **Dataset** | Hotel Booking Demand — 119,390 bookings × 32 variables from two hotels in Portugal (a **City Hotel** in Lisbon and a **Resort Hotel** in the Algarve), arrivals Jul 2015 – Aug 2017 |
+| **Original source** | Antonio, N., de Almeida, A., & Nunes, L. (2019). Hotel booking demand datasets. *Data in Brief, 22*, 41–49. https://doi.org/10.1016/j.dib.2018.11.126 |
+| **Download** | TidyTuesday 2020-02-11 (`hotels.csv`, both hotels combined): https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11 |
+| **Response (Y)** | `adr` — average daily rate (€ per night) of a **realised (not cancelled)** stay |
+| **Interaction** | `lead_time × hotel` — does booking earlier change the price differently at the city vs the resort hotel? |
+| **Why it's novel** | Almost all existing uses of this data predict *cancellations* (classification). We model the *price* with linear regression. |
+
+**Draft research question** (B refines it):
+> Among realised bookings at a Portuguese city hotel and resort hotel (2015–2017), how is the average daily rate associated with booking lead time, and does this association differ between the two hotels, after accounting for arrival month, length of stay (weekend and week nights), party size (adults, children), meal plan, market segment, customer type, reserved room type, repeat-guest status and number of special requests?
+
+Quick feasibility check already done (all 4 can relax 😌): after cleaning ≈ 73k rows; a trial model with 13 predictors + the interaction gives R² ≈ 0.60, and the `lead_time × hotel` term is clearly significant (city hotel: about −€0.10 per extra day booked ahead; resort hotel: close to zero).
+
+---
 
 ## 1. Roles at a glance
 
-| | Role | Owns in Part 1 | Proposal words owned | Owns in Part 2 |
-|---|---|---|---|---|
-| **A** | Data Lead & Submitter | Dataset vetting, cleaning code, OneDrive CSVs, **Data description** | ~300 | Transformations + assumption fixes; reproducible final Rmd |
-| **B** | Literature & Intro Lead | Research question wording, 3 peer-reviewed papers, **Introduction**, bibliography | ~400 | Poster intro/background + discussion & limitations |
-| **C** | Modelling & Diagnostics Lead | Preliminary model (≥9 predictors + interaction), residual plots, model table, **Preliminary results** | ~400 | Variable selection, multicollinearity, influential points, final model |
-| **D** | EDA, Ethics & Plan Lead | Variable summary table, interaction justification figure, **Ethics** + **Plan** (with Gantt), Part 0 agreement | ~500 | Poster layout & figures; video editing & assembly |
+| | Role | Name | Owns in Part 1 | Words | Owns in Part 2 |
+|---|---|---|---|---|---|
+| **A** | Data Lead & Submitter | Jessica Guan | Cleaning code, OneDrive CSVs, **Data description**, final submission | ~300 | log/Box-Cox transformation of ADR, re-checking assumptions |
+| **B** | Literature & Intro Lead | | Research question, 3 papers, **Introduction**, bibliography | ~400 | Poster background, discussion & limitations |
+| **C** | Modelling & Diagnostics Lead | | Preliminary model, residual plots, model table, **Preliminary results** | ~400 | Variable selection, VIF, outliers/leverage/influence, final model |
+| **D** | EDA, Ethics & Plan Lead | | Summary table, interaction figure, **Ethics** + **Plan** (Gantt), Part 0 agreement | ~500 | Poster layout & figures, video editing |
 
 Review pairs (each reviews the other's section before merge): **A ↔ D**, **B ↔ C**.
-Everyone: finds ≥ 1 candidate paper, reads the whole proposal once before submission, records their part of the video, writes their own Part 3 reflection.
+Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once before submission, records their part of the video, writes their own Part 3 reflection.
 
 ---
 
 ## 2. Detailed tasks — Part 0 + Part 1 (due Thu Nov 5)
 
-### 🅰 A — Data Lead & Submitter
-- [ ] Vet candidate datasets against the requirements:
-  - open-source with a citable URL; **≥ 1000 rows**; 1 continuous-ish response; **≥ 9 predictors** (≥1 categorical, ≥1 numeric)
-  - **not** a textbook dataset, **not** Boston Housing or Red Wine Quality
-  - original curator + *how/why it was collected* can be found (if not → drop it)
-  - if from Kaggle/UCI: our question must differ from the original use
-- [ ] Put the original file in `data/raw/` (never edit it); write the cleaning chunk in `proposal.Rmd`
-      (subset, rename, handle missing values, recode categoricals) → writes `data/clean/clean_data.csv`
-- [ ] Upload original + cleaned CSV to **UofT OneDrive**, set *"Anyone in UofT with the link"*, test the link from another member's account
-- [ ] Write **Data description (≤ 300 words)**: where found, how & why originally collected, response summary + why it suits a linear model (reasonably continuous? observations independent?)
-- [ ] Final knit check on a clean R session; **submit all components on Quercus** (one submission only) + post OneDrive link as submission comment
+### 🅰 A — Jessica Guan · Data Lead & Submitter
+- [ ] Put `hotels.csv` in `data/raw/` (never edit it by hand)
+- [ ] Cleaning chunk in `proposal.Rmd` → writes `data/clean/hotels_clean.csv`. Agreed rules:
+  - keep realised stays only: `is_canceled == 0`
+  - drop stays with 0 nights (`stays_in_weekend_nights + stays_in_week_nights == 0`) and `adr <= 0` (complimentary / data errors)
+  - `meal`: merge `"Undefined"` into `"SC"` (both mean *no meal package* per the data paper)
+  - drop the 1 row with `distribution_channel == "Undefined"` and the 4 rows with `reserved_room_type == "L"`
+  - make `arrival_date_month` a factor in calendar order; create `domestic` (= `country == "PRT"`) instead of the 170+-level `country`
+  - remove columns that are IDs or only known *after* the stay: `reservation_status`, `reservation_status_date`, `assigned_room_type`, `agent`, `company`, `arrival_date_week_number`, `arrival_date_day_of_month`
+  - report the row count after every step (goes in the Data description)
+- [ ] Upload raw + clean CSV to **UofT OneDrive**, permission *"Anyone in UofT with the link"*, test the link from a teammate's account
+- [ ] **Data description (≤ 300 words)**: where found (cite the paper + TidyTuesday), how and why it was collected (hotels' property-management-system databases, extracted by the authors for research on booking demand / cancellations), summary of `adr` (right-skewed, median ≈ €95), why it suits a linear model (continuous; each row is a separate booking)
+- [ ] Final knit on a clean R session; **submit everything on Quercus** + OneDrive link as a submission comment
 
 ### 🅱 B — Literature & Intro Lead
-- [ ] Draft the research question so the **response is defined clearly** and predictors are **named explicitly** (no vague "factors")
-- [ ] Collect candidate papers from everyone → choose **3 peer-reviewed** papers; fill a notes file in `literature/` for each
-- [ ] Write **Introduction (≤ 400 words)**:
-  - research question + why a linear model beats a simpler technique, and *which model output answers it* (coefficients / CI / p-value / prediction)
-  - literature woven together by theme (not one paragraph per paper), what each says about response ↔ predictors, and the **gap** we fill
-  - who benefits from the model and why
-- [ ] Own `references.bib` + in-text citations in **APA**; compile the **Bibliography**
-- [ ] With C: write the "compare to literature" sentences in Preliminary results
+- [ ] Polish the research question above (response clearly defined, predictors named — never "factors")
+- [ ] Find **3 peer-reviewed** papers; one notes file each in `literature/`. Search terms to start with (Google Scholar / UofT Library):
+  - `hotel "advance booking" price "lead time"`, `hotel dynamic pricing evidence`
+  - `hedonic pricing hotel room rates regression`
+  - `resort vs urban hotel pricing seasonality`
+  - also read the data paper (Antonio et al., 2019) for context — it can be cited, but it doesn't count as one of the 3 relationship papers
+- [ ] **Introduction (≤ 400 words)**: question; why a linear model (the `lead_time` slope and the `lead_time:hotel` coefficient + CI directly answer it); literature organised by theme; gap = price (not cancellations), city vs resort comparison; who benefits (hotel revenue managers setting early-booking discounts, travellers deciding when to book)
+- [ ] Own `references.bib` (APA) + in-text citations; with C, write the "compare to literature" sentences
 
 ### 🅲 C — Modelling & Diagnostics Lead
-- [ ] Fit the preliminary MLR with **≥ 9 predictors** and **1 interaction (categorical × another variable)**
-- [ ] Residual analysis (do **not** fix violations yet!):
-  - conditions: response vs fitted plot; pairwise scatterplots of numeric predictors
-  - assumptions: residuals vs fitted, residuals vs each predictor, normal QQ plot
-  - plots arranged **2–3 per row in one figure** (patchwork / `par(mfrow=)`), with axis labels + captions
-- [ ] Model table with estimates **and SE and/or 95% CI** (kable, no raw R output)
-- [ ] Write **Preliminary results (≤ 400 words incl. captions)**: verdict for each assumption with the plot that shows it; surprises in sign/size/significance vs the literature
+- [ ] Preliminary model, e.g.
+  `adr ~ lead_time * hotel + arrival_date_month + stays_in_weekend_nights + stays_in_week_nights + adults + children + meal + market_segment + customer_type + reserved_room_type + is_repeated_guest + total_of_special_requests + domestic`
+- [ ] Residual analysis (**do not fix anything yet**):
+  - conditions: response vs fitted; pairwise scatterplots of numeric predictors
+  - assumptions: residuals vs fitted, residuals vs each predictor, normal QQ — 2–3 plots per row
+  - things to look out for with this data: ADR is right-skewed → likely fan shape (non-constant variance) and a heavy right tail in the QQ plot; group bookings (`market_segment == "Groups"`) may share prices → possible correlated errors
+  - with ~73k rows almost everything is "significant" → discuss size of effects and CIs, not just p-values
+- [ ] Model table with estimates, SE and 95% CI (kable, no raw R output)
+- [ ] **Preliminary results (≤ 400 words incl. captions)**
 
 ### 🅳 D — EDA, Ethics & Plan Lead
-- [ ] Lead the Part 0 meeting, fill [`part0_teamwork_agreement/agreement_draft.md`](part0_teamwork_agreement/agreement_draft.md) → paste into the .docx, collect 4 signatures, export PDF
-- [ ] Build the **variable summary table** (every variable in the model) with an informative caption: skew, outliers, nonsense values, spread, missing values
-- [ ] Make the **figure/table justifying the interaction** (e.g. response vs numeric predictor coloured by category); if a numeric variable was turned categorical, justify the cut points
-- [ ] Write **Ethics (≤ 200 words)**: trustworthiness + ethical collection, using **≥ 1 concept from each** part of the Module 3 ethics module
-- [ ] Write **Plan (≤ 300 words)**: how we'll reduce/increase predictors, how often assumptions get re-checked, likely transformations (based on C's plots), predictors we must keep and why, plus a **Gantt chart** with dates and names for analysis, poster and video
-- [ ] Final formatting pass: headers, word counts (≤ 15 over max), no R code/output visible
+- [ ] Run the Part 0 meeting, fill [`part0_teamwork_agreement/agreement_draft.md`](part0_teamwork_agreement/agreement_draft.md), paste into the .docx, collect 4 signatures, export PDF
+- [ ] **Summary table** for every model variable: numeric (mean, SD, min, median, max) + categorical (counts / %); caption points out ADR right skew, very long lead times (> 600 days), rare categories (e.g. `FB` meal, `Aviation` segment), big `adults` values
+- [ ] **Interaction figure**: ADR vs lead time, coloured by hotel, with a straight-line fit per hotel → the different slopes justify `lead_time × hotel`
+- [ ] **Ethics (≤ 200 words)**: trustworthiness (peer-reviewed data paper, real hotel system records, but only 2 hotels in 1 country → limited generalisability) + ethical collection (data anonymised — no names/IDs; hotels' consent; `country` is sensitive-ish, so we only use domestic vs international). Use ≥ 1 term from each part of the Module 3 ethics module
+- [ ] **Plan (≤ 300 words)**: log or Box-Cox transform of ADR; variable selection (partial F-tests, AIC/BIC, adjusted R²); VIF for multicollinearity (e.g. `market_segment` vs `customer_type`); leverage/outliers/influence; must-keep predictors: `lead_time`, `hotel`, their interaction; Gantt chart with names and dates
+- [ ] Final formatting pass: headers, word counts (≤ 15 over), no R code/output visible
 
 ---
 
@@ -65,22 +83,22 @@ Everyone: finds ≥ 1 candidate paper, reads the whole proposal once before subm
 
 | Date | Milestone | Who |
 |---|---|---|
-| **Thu Oct 22** | Kick-off meeting: pick roles, agree on Part 0 answers, shortlist 2–3 datasets | All (D runs it) |
-| **Sat Oct 24** | ✅ Dataset + research question **locked** | A, B (all approve) |
-| **Sun Oct 25** | Raw data in repo, cleaning code merged | A |
-| **Tue Oct 27** | 3 papers chosen + notes done; summary table done; preliminary model fitted | B, D, C |
-| **Wed Oct 28** | Teamwork agreement signed (PDF) | D (all sign) |
+| ✅ **Sun Oct 25** | Dataset locked: Hotel Booking Demand | All |
+| **Mon Oct 26** | Raw data + cleaning code merged; clean CSV available to everyone | A |
+| **Tue Oct 27** | Part 0 meeting held, agreement drafted | D (all attend) |
+| **Wed Oct 28** | 3 papers chosen + notes; summary table + interaction figure; preliminary model + residual plots; agreement **signed** | B, D, C, all |
+| **Fri Oct 30** | OneDrive link set up and tested | A |
 | **Sun Nov 1** | **First full draft of every section merged** | All |
-| **Mon Nov 2 – Tue Nov 3** | Cross-review (A↔D, B↔C), then everyone reads the whole thing once | All |
-| **Wed Nov 4** | Final knit, word-count check, OneDrive link tested → **ready to submit** | A, D |
-| **Thu Nov 5** | Submit (aim for the afternoon, not 11:58 pm) | A |
+| **Mon Nov 2 – Tue Nov 3** | Cross-review (A↔D, B↔C), then everyone reads the whole thing | All |
+| **Wed Nov 4** | Final knit, word counts, link check → **ready to submit** | A, D |
+| **Thu Nov 5** | Submit (afternoon, not 11:58 pm) | A |
 
 ## 4. Timeline — Part 2 + 3 (tentative; refine in the Plan section)
 
 | Date | Milestone | Lead |
 |---|---|---|
-| Nov 9 – 15 | Address assumption violations (transformations), re-check residuals | A |
-| Nov 16 – 22 | Variable selection (e.g. partial F-tests, AIC/BIC, adjusted R²), VIF, leverage/outliers/influence; final model chosen | C |
+| Nov 9 – 15 | Transform ADR (log / Box-Cox), re-check residuals | A |
+| Nov 16 – 22 | Variable selection, VIF, leverage/outliers/influence → final model | C |
 | Nov 23 – 27 | Poster draft (intro, methods, results, discussion, limitations) | D (layout), B (text) |
 | Nov 28 – 30 | Script + record video, each member presents a section | D (editing), all record |
 | Dec 1 – 2 | Final review of poster + video; Rmd reproduces everything | All |
@@ -88,8 +106,8 @@ Everyone: finds ≥ 1 candidate paper, reads the whole proposal once before subm
 
 ---
 
-## 5. Meetings & communication (to be confirmed in Part 0)
+## 5. Meetings & communication (confirm in Part 0)
 
-- Weekly 45-min check-in (time: ______), plus a quick async update in our group chat every **Mon / Thu**
-- Each task = a GitHub Issue assigned to its lead; move it to *done* by closing the issue via a PR
+- Weekly 45-min check-in (time: ______), plus a quick async update in the group chat every **Mon / Thu**
+- Each task = a GitHub Issue assigned to its lead; close it via a PR
 - Blocked or late? Say so in the chat **at least 24 h before** the task's date — no surprises
