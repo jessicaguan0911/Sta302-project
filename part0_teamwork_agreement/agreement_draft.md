@@ -22,9 +22,9 @@ Suggested answers are pre-filled — edit anything the group doesn't agree with.
 
 **4. Roles and division of work** (details in `TEAM_PLAN.md`)
 - A Jessica Guan — Data Lead & Submitter: dataset, cleaning, OneDrive, Data description section, final submission
-- B ______ — Literature & Intro Lead: research question, 3 papers, Introduction, bibliography
-- C ______ — Modelling & Diagnostics Lead: preliminary model, residual analysis, Preliminary results section
-- D ______ — EDA, Ethics & Plan Lead: summary table, interaction figure, Ethics + Plan sections, this agreement
+- B Estella Zhang — Literature & Intro Lead: research question, 3 papers, Introduction, bibliography
+- C Cathy Zhong — Modelling & Diagnostics Lead: preliminary model, residual analysis, Preliminary results section
+- D Jesse Zhan — EDA, Ethics & Plan Lead: summary table, interaction figure, Ethics + Plan sections, this agreement
 - Each lead owns a deliverable, but every section is reviewed by a second member (A↔D, B↔C), and
   roles for Part 2 are re-balanced so the workload stays equal across the term.
 

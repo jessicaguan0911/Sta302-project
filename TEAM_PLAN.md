@@ -23,9 +23,9 @@ Quick feasibility check already done (all 4 can relax 😌): after cleaning ≈ 
 | | Role | Name | Owns in Part 1 | Words | Owns in Part 2 |
 |---|---|---|---|---|---|
 | **A** | Data Lead & Submitter | Jessica Guan | Cleaning code, OneDrive CSVs, **Data description**, final submission | ~300 | log/Box-Cox transformation of ADR, re-checking assumptions |
-| **B** | Literature & Intro Lead | | Research question, 3 papers, **Introduction**, bibliography | ~400 | Poster background, discussion & limitations |
-| **C** | Modelling & Diagnostics Lead | | Preliminary model, residual plots, model table, **Preliminary results** | ~400 | Variable selection, VIF, outliers/leverage/influence, final model |
-| **D** | EDA, Ethics & Plan Lead | | Summary table, interaction figure, **Ethics** + **Plan** (Gantt), Part 0 agreement | ~500 | Poster layout & figures, video editing |
+| **B** | Literature & Intro Lead | Estella Zhang | Research question, 3 papers, **Introduction**, bibliography | ~400 | Poster background, discussion & limitations |
+| **C** | Modelling & Diagnostics Lead | Cathy Zhong | Preliminary model, residual plots, model table, **Preliminary results** | ~400 | Variable selection, VIF, outliers/leverage/influence, final model |
+| **D** | EDA, Ethics & Plan Lead | Jesse Zhan | Summary table, interaction figure, **Ethics** + **Plan** (Gantt), Part 0 agreement | ~500 | Poster layout & figures, video editing |
 
 Review pairs (each reviews the other's section before merge): **A ↔ D**, **B ↔ C**.
 Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once before submission, records their part of the video, writes their own Part 3 reflection.
@@ -48,7 +48,7 @@ Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once bef
 - [ ] **Data description (≤ 300 words)**: where found (cite the paper + TidyTuesday), how and why it was collected (hotels' property-management-system databases, extracted by the authors for research on booking demand / cancellations), summary of `adr` (right-skewed, median ≈ €95), why it suits a linear model (continuous; each row is a separate booking)
 - [ ] Final knit on a clean R session; **submit everything on Quercus** + OneDrive link as a submission comment
 
-### 🅱 B — Literature & Intro Lead
+### 🅱 B — Estella Zhang · Literature & Intro Lead
 - [ ] Polish the research question above (response clearly defined, predictors named — never "factors")
 - [ ] Find **3 peer-reviewed** papers; one notes file each in `literature/`. Search terms to start with (Google Scholar / UofT Library):
   - `hotel "advance booking" price "lead time"`, `hotel dynamic pricing evidence`
@@ -58,7 +58,7 @@ Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once bef
 - [ ] **Introduction (≤ 400 words)**: question; why a linear model (the `lead_time` slope and the `lead_time:hotel` coefficient + CI directly answer it); literature organised by theme; gap = price (not cancellations), city vs resort comparison; who benefits (hotel revenue managers setting early-booking discounts, travellers deciding when to book)
 - [ ] Own `references.bib` (APA) + in-text citations; with C, write the "compare to literature" sentences
 
-### 🅲 C — Modelling & Diagnostics Lead
+### 🅲 C — Cathy Zhong · Modelling & Diagnostics Lead
 - [ ] Preliminary model, e.g.
   `adr ~ lead_time * hotel + arrival_date_month + stays_in_weekend_nights + stays_in_week_nights + adults + children + meal + market_segment + customer_type + reserved_room_type + is_repeated_guest + total_of_special_requests + domestic`
 - [ ] Residual analysis (**do not fix anything yet**):
@@ -69,7 +69,7 @@ Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once bef
 - [ ] Model table with estimates, SE and 95% CI (kable, no raw R output)
 - [ ] **Preliminary results (≤ 400 words incl. captions)**
 
-### 🅳 D — EDA, Ethics & Plan Lead
+### 🅳 D — Jesse Zhan · EDA, Ethics & Plan Lead
 - [ ] Run the Part 0 meeting, fill [`part0_teamwork_agreement/agreement_draft.md`](part0_teamwork_agreement/agreement_draft.md), paste into the .docx, collect 4 signatures, export PDF
 - [ ] **Summary table** for every model variable: numeric (mean, SD, min, median, max) + categorical (counts / %); caption points out ADR right skew, very long lead times (> 600 days), rare categories (e.g. `FB` meal, `Aviation` segment), big `adults` values
 - [ ] **Interaction figure**: ADR vs lead time, coloured by hotel, with a straight-line fit per hotel → the different slopes justify `lead_time × hotel`

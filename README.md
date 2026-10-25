@@ -11,9 +11,9 @@ Part 0 (teamwork agreement), Part 1 (proposal), Part 2 (poster + video) and Part
 | Role | Name | GitHub | UofT email |
 |---|---|---|---|
 | **A — Data Lead & Submitter** | Jessica Guan | @jessicaguan0911 | |
-| **B — Literature & Intro Lead** | | | |
-| **C — Modelling & Diagnostics Lead** | | | |
-| **D — EDA, Ethics & Plan Lead** | | | |
+| **B — Literature & Intro Lead** | Estella Zhang | | |
+| **C — Modelling & Diagnostics Lead** | Cathy Zhong | | |
+| **D — EDA, Ethics & Plan Lead** | Jesse Zhan | | |
 
 ## Deadlines (all 11:59 pm ET)
 
