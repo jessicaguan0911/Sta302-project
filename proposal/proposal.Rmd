@@ -18,23 +18,51 @@ library(tidyverse)
 library(knitr)
 library(patchwork)
 
-# Flip to TRUE once the raw data is in data/raw/ (A).
+# Flip to TRUE once the model/summary chunks below are filled in (C, D).
+# The data-cleaning chunk always runs.
 DATA_READY <- FALSE
 knitr::opts_chunk$set(eval = DATA_READY)
 ```
 
-```{r load-clean}
+```{r load-clean, eval=TRUE}
 # ===== A: data cleaning =====
-# Read the untouched download, subset/rename/recode, and write the cleaned copy.
-raw <- read_csv("../data/raw/RAW_FILE_NAME.csv")
+# Read the untouched download, keep realised stays with valid prices,
+# recode categories, drop columns we can't use, and write the cleaned copy.
+raw <- read_csv("../data/raw/hotels.csv", show_col_types = FALSE)
 
-clean <- raw %>%
-  # select(response, x1, x2, ...) %>%
-  # rename(...) %>%
-  # mutate(cat_var = factor(cat_var)) %>%
-  drop_na()
+# Step 1: keep realised stays only (cancelled bookings never paid this price).
+step1 <- raw %>% filter(is_canceled == 0)
 
-write_csv(clean, "../data/clean/clean_data.csv")
+# Step 2: drop 0-night stays and complimentary / invalid prices.
+step2 <- step1 %>%
+  filter(stays_in_weekend_nights + stays_in_week_nights > 0, adr > 0)
+
+# Step 3: drop rows with undefined or unusable values.
+step3 <- step2 %>%
+  filter(distribution_channel != "Undefined",  # 1 row, no meaning
+         reserved_room_type != "L",            # 4 rows, too rare to estimate
+         country != "NULL",                    # guest country unknown
+         !is.na(children))
+
+# Step 4: recode, then keep only variables known at booking time.
+clean <- step3 %>%
+  mutate(
+    meal = if_else(meal == "Undefined", "SC", meal),  # both mean "no meal package"
+    arrival_date_month = factor(arrival_date_month, levels = month.name),
+    domestic = if_else(country == "PRT", "Domestic", "International"),
+    is_repeated_guest = factor(is_repeated_guest, levels = c(0, 1), labels = c("No", "Yes")),
+    across(c(hotel, meal, market_segment, distribution_channel, customer_type,
+             reserved_room_type, deposit_type, domestic), factor)
+  ) %>%
+  select(-is_canceled, -reservation_status, -reservation_status_date,
+         -assigned_room_type, -agent, -company, -country,
+         -arrival_date_week_number, -arrival_date_day_of_month)
+
+# Rows left after each step (quote these in the Data description).
+row_counts <- c(raw = nrow(raw), realised = nrow(step1),
+                valid_stay = nrow(step2), final = nrow(clean))
+
+write_csv(clean, "../data/clean/hotels_clean.csv")
 ```
 
 # Contributions {-}

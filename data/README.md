@@ -10,7 +10,7 @@
 | Original curator | Antonio, de Almeida & Nunes (2019), *Data in Brief* 22, 41–49, https://doi.org/10.1016/j.dib.2018.11.126 |
 | How / why it was collected | Extracted from the two hotels' property-management-system databases (arrivals Jul 2015 – Aug 2017), anonymised, released for research on hotel booking demand |
 | Rows × columns (raw) | 119,390 × 32 |
-| Rows × columns (clean) | |
+| Rows × columns (clean) | 73,004 × 24 (raw 119,390 → realised 75,166 → valid stay 73,419 → final 73,004) |
 | OneDrive link (submission) | |
 
 Requirements check: ☐ open-source ☐ ≥ 1000 rows ☐ 1 response ☐ ≥ 9 predictors (≥1 categorical, ≥1 numeric)
