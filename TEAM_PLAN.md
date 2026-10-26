@@ -14,7 +14,7 @@
 **Draft research question** (B refines it):
 > Among realised bookings at a Portuguese city hotel and resort hotel (2015–2017), how is the average daily rate associated with booking lead time, and does this association differ between the two hotels, after accounting for arrival month, length of stay (weekend and week nights), party size (adults, children), meal plan, market segment, customer type, reserved room type, repeat-guest status and number of special requests?
 
-Quick feasibility check already done on the final cleaned data (all 4 can relax 😌): 73,004 rows; a trial model with 13 predictors + the interaction gives R² ≈ 0.58, and the `lead_time × hotel` term is clearly significant (city hotel: about −€0.09 per extra day booked ahead; resort hotel: only about −€0.04).
+Quick feasibility check already done on the final cleaned data (all 4 can relax 😌): 73,004 rows; a trial model with 14 predictors + the interaction gives R² ≈ 0.58, and the `lead_time × hotel` term is clearly significant (city hotel: about −€0.09 per extra day booked ahead; resort hotel: only about −€0.04).
 
 ---
 

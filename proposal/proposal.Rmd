@@ -95,13 +95,24 @@ write_csv(clean, "../data/clean/hotels_clean.csv")
 fmt <- function(x, d = 0) formatC(x, format = "f", digits = d, big.mark = ",")
 adr <- clean$adr
 adr_skew <- mean((adr - mean(adr))^3) / sd(adr)^3
+
+# Predictors planned for the preliminary model (C: build the model from this
+# vector so the Data description and the model always agree).
+prelim_predictors <- c("lead_time", "hotel", "arrival_date_month",
+                       "stays_in_weekend_nights", "stays_in_week_nights",
+                       "adults", "children", "meal", "market_segment",
+                       "customer_type", "reserved_room_type",
+                       "is_repeated_guest", "total_of_special_requests",
+                       "domestic")
+n_numeric <- sum(sapply(clean[prelim_predictors], is.numeric))
+n_categorical <- length(prelim_predictors) - n_numeric
 ```
 
-*Source and original collection.* We use the hotel booking demand data of @antonio2019, downloaded as one combined file from the TidyTuesday project [@tidytuesday]. The authors extracted every booking due to arrive between July 2015 and August 2017 directly from the property-management-system databases of two Portuguese hotels, a resort hotel in the Algarve and a city hotel in Lisbon, and deleted all hotel and customer identifiers. They collected the data to build models that predict whether a booking will be cancelled. The raw file has `r fmt(row_counts[["raw"]])` bookings and 32 variables.
+*Source and original collection.* We use the Hotel Booking Demand data of @antonio2019, downloaded from TidyTuesday [@tidytuesday]. These are administrative records, not survey data: the authors queried the property-management-system databases of a resort hotel (Algarve) and a city hotel (Lisbon) in Portugal for all bookings due to arrive between July 2015 and August 2017, then removed hotel and customer identifiers. They collected the data to build models predicting booking cancellations.
 
-*Cleaning.* Because we study the price actually paid, we kept only realised stays (`r fmt(row_counts[["realised"]])`), removed zero-night stays and non-positive rates (`r fmt(row_counts[["valid_stay"]])`), and dropped rows with an undefined booking channel, a very rare room type or an unknown guest country, leaving `r fmt(row_counts[["final"]])` bookings.
+*Cleaning.* To model prices actually paid, we kept realised stays (`r fmt(row_counts[["realised"]])` of `r fmt(row_counts[["raw"]])`), removed zero-night stays and non-positive rates (`r fmt(row_counts[["valid_stay"]])` left), and dropped rows with an undefined channel, a very rare room type or an unknown country, leaving `r fmt(row_counts[["final"]])` bookings. We cleaned the data in R [@rcore] with the tidyverse [@tidyverse]. The data meet the project requirements: one response and `r length(prelim_predictors)` predictors (`r n_numeric` numerical, `r n_categorical` categorical), summarised in Table 1.
 
-*Response variable.* The average daily rate (ADR) is a booking's total lodging revenue divided by its number of nights. It is continuous, with median `r fmt(median(adr), 2)` (IQR `r fmt(quantile(adr, 0.25))`–`r fmt(quantile(adr, 0.75))`), mean `r fmt(mean(adr), 2)` and SD `r fmt(sd(adr), 2)`, and is right-skewed (skewness `r fmt(adr_skew, 2)`). Each row is a separate booking, so observations are plausibly independent, although repeat guests and group bookings may share prices; we revisit this in the residual analysis.
+*Response variable.* The average daily rate (ADR), lodging revenue divided by nights stayed [@antonio2019], takes `r fmt(length(unique(adr)))` distinct values, so it is effectively continuous: median `r fmt(median(adr), 2)` (IQR `r fmt(quantile(adr, 0.25))`–`r fmt(quantile(adr, 0.75))`), mean `r fmt(mean(adr), 2)`, SD `r fmt(sd(adr), 2)`, right-skewed (skewness `r fmt(adr_skew, 2)`). Each row is a separate booking, so observations are plausibly independent, though repeat guests and group bookings may share prices; we check this in the residual analysis.
 
 <!-- ===== A END ===== -->
 
@@ -143,6 +154,8 @@ kable(num_summary, digits = 2,
 
 ```{r model}
 # ===== C: >= 9 predictors + 1 interaction (categorical x another variable) =====
+# Tip: reformulate(c(prelim_predictors, "lead_time:hotel"), response = "adr")
+# builds the formula from the predictor list in the Data description.
 model <- lm(response ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x_cat:x_num,
             data = clean)
 ```
