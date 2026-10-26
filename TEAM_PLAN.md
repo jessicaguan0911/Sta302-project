@@ -14,7 +14,7 @@
 **Draft research question** (B refines it):
 > Among realised bookings at a Portuguese city hotel and resort hotel (2015–2017), how is the average daily rate associated with booking lead time, and does this association differ between the two hotels, after accounting for arrival month, length of stay (weekend and week nights), party size (adults, children), meal plan, market segment, customer type, reserved room type, repeat-guest status and number of special requests?
 
-Quick feasibility check already done (all 4 can relax 😌): after cleaning ≈ 73k rows; a trial model with 13 predictors + the interaction gives R² ≈ 0.60, and the `lead_time × hotel` term is clearly significant (city hotel: about −€0.10 per extra day booked ahead; resort hotel: close to zero).
+Quick feasibility check already done on the final cleaned data (all 4 can relax 😌): 73,004 rows; a trial model with 13 predictors + the interaction gives R² ≈ 0.58, and the `lead_time × hotel` term is clearly significant (city hotel: about −€0.09 per extra day booked ahead; resort hotel: only about −€0.04).
 
 ---
 
@@ -40,7 +40,7 @@ Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once bef
   - keep realised stays only: `is_canceled == 0`
   - drop stays with 0 nights (`stays_in_weekend_nights + stays_in_week_nights == 0`) and `adr <= 0` (complimentary / data errors)
   - `meal`: merge `"Undefined"` into `"SC"` (both mean *no meal package* per the data paper)
-  - drop the 1 row with `distribution_channel == "Undefined"` and the 4 rows with `reserved_room_type == "L"`
+  - drop the 1 row with `distribution_channel == "Undefined"`, the 4 rows with `reserved_room_type == "L"` and the 410 rows with unknown guest country (`country == "NULL"`)
   - make `arrival_date_month` a factor in calendar order; create `domestic` (= `country == "PRT"`) instead of the 170+-level `country`
   - remove columns that are IDs or only known *after* the stay: `reservation_status`, `reservation_status_date`, `assigned_room_type`, `agent`, `company`, `arrival_date_week_number`, `arrival_date_day_of_month`
   - report the row count after every step (goes in the Data description)
