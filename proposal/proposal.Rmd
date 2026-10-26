@@ -1,3 +1,4 @@
+
 ---
 title: "TITLE: <response> and <predictors> — a linear regression proposal"
 subtitle: "STA302 Final Project Part 1 — Group # ___"
