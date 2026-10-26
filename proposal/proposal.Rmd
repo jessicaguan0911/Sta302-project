@@ -90,9 +90,18 @@ write_csv(clean, "../data/clean/hotels_clean.csv")
 <!-- ===== A START: Data description (max 300 words; D's table + figure live here too) ===== -->
 # Data Description
 
-*Source and original collection.* <!-- Where found [@dataset]; how and why the curator collected it. -->
+```{r adr-stats, eval=TRUE}
+# Numbers quoted inline in the Data description (A).
+fmt <- function(x, d = 0) formatC(x, format = "f", digits = d, big.mark = ",")
+adr <- clean$adr
+adr_skew <- mean((adr - mean(adr))^3) / sd(adr)^3
+```
 
-*Response variable.* <!-- Summary; reasonably continuous? observations independent? -->
+*Source and original collection.* We use the hotel booking demand data of @antonio2019, downloaded as one combined file from the TidyTuesday project [@tidytuesday]. The authors extracted every booking due to arrive between July 2015 and August 2017 directly from the property-management-system databases of two Portuguese hotels, a resort hotel in the Algarve and a city hotel in Lisbon, and deleted all hotel and customer identifiers. They collected the data to build models that predict whether a booking will be cancelled. The raw file has `r fmt(row_counts[["raw"]])` bookings and 32 variables.
+
+*Cleaning.* Because we study the price actually paid, we kept only realised stays (`r fmt(row_counts[["realised"]])`), removed zero-night stays and non-positive rates (`r fmt(row_counts[["valid_stay"]])`), and dropped rows with an undefined booking channel, a very rare room type or an unknown guest country, leaving `r fmt(row_counts[["final"]])` bookings.
+
+*Response variable.* The average daily rate (ADR) is a booking's total lodging revenue divided by its number of nights. It is continuous, with median `r fmt(median(adr), 2)` (IQR `r fmt(quantile(adr, 0.25))`–`r fmt(quantile(adr, 0.75))`), mean `r fmt(mean(adr), 2)` and SD `r fmt(sd(adr), 2)`, and is right-skewed (skewness `r fmt(adr_skew, 2)`). Each row is a separate booking, so observations are plausibly independent, although repeat guests and group bookings may share prices; we revisit this in the residual analysis.
 
 <!-- ===== A END ===== -->
 
