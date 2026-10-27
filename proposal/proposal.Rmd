@@ -1,8 +1,8 @@
 
 ---
 title: "TITLE: <response> and <predictors> — a linear regression proposal"
-subtitle: "STA302 Final Project Part 1 — Group # ___"
-author: "Jessica Guan, Estella Zhang, Cathy Zhong, Jesse Zhan"
+subtitle: "STA302 Final Project Part 1 — Group 3"
+author: "Jiayi (Jessica) Guan, Yaou (Estella) Zhang, Xinrong (Cathy) Zhong, Junzhe (Jesse) Zhan"
 date: "November 5, 2026"
 output:
   pdf_document:
@@ -121,10 +121,10 @@ write_csv(clean, clean_path)
 
 <!-- Not counted in the word limit. Be specific. -->
 
-- **Jessica Guan (A)** — 
-- **Estella Zhang (B)** —
-- **Cathy Zhong (C)** —
-- **Jesse Zhan (D)** —
+- **Jiayi (Jessica) Guan** — 
+- **Yaou (Estella) Zhang** —
+- **Xinrong (Cathy) Zhong** —
+- **Junzhe (Jesse) Zhan** —
 
 <!-- ===== B START: Introduction (max 400 words) ===== -->
 # Introduction

@@ -1,4 +1,4 @@
-# STA302 Final Project (Fall 2026) — Group # ___
+# STA302 Final Project (Fall 2026) — Group 3
 
 Linear regression analysis of an open-source dataset. This repo holds everything for
 Part 0 (teamwork agreement), Part 1 (proposal), Part 2 (poster + video) and Part 3 (individual reflections).
@@ -8,12 +8,12 @@ Part 0 (teamwork agreement), Part 1 (proposal), Part 2 (poster + video) and Part
 
 ## Team
 
-| Role | Name | GitHub | UofT email |
+| Role | Name (Quercus name) | GitHub | UofT email |
 |---|---|---|---|
-| **A — Data Lead & Submitter** | Jessica Guan | @jessicaguan0911 | |
-| **B — Literature & Intro Lead** | Estella Zhang | @estellazhang0504 | |
-| **C — Modelling & Diagnostics Lead** | Cathy Zhong | @Cathy-Zhong | |
-| **D — EDA, Ethics & Plan Lead** | Jesse Zhan | @JunzheZhan | |
+| **A — Data Lead & Submitter** | Jessica Guan (Jiayi Guan) | @jessicaguan0911 | jyjessica.guan@mail.utoronto.ca |
+| **B — Literature & Intro Lead** | Estella Zhang (Yaou Zhang) | @estellazhang0504 | yaou.zhang@mail.utoronto.ca |
+| **C — Modelling & Diagnostics Lead** | Cathy Zhong (Xinrong Zhong) | @Cathy-Zhong | xinrong.zhong@mail.utoronto.ca |
+| **D — EDA, Ethics & Plan Lead** | Jesse Zhan (Junzhe Zhan) | @JunzheZhan | junzhe.zhan@mail.utoronto.ca |
 
 ## Deadlines (all 11:59 pm ET)
 

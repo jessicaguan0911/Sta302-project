@@ -1,4 +1,4 @@
-# Teamwork Agreement — draft answers (Group # ___)
+# Teamwork Agreement — draft answers (Group 3) — ✅ signed Oct 26, final PDF: `Teamwork_Agreement_Group3.pdf`
 
 Fill this in together at the kick-off meeting, then paste it into the box in
 `STA302_Project_Part_0_-_Teamwork_Agreement_Template.docx`, have all four members sign, and export to PDF.
