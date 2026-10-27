@@ -19,3 +19,6 @@ Thumbs.db
 
 # Keep the Part 0 template + signed agreement PDF
 !part0_teamwork_agreement/*.pdf
+
+# Generated when knitting (source lives in proposal.Rmd)
+proposal/references.bib

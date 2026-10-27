@@ -56,7 +56,7 @@ Everyone: suggests ≥ 1 candidate paper to B, reads the whole proposal once bef
   - `resort vs urban hotel pricing seasonality`
   - also read the data paper (Antonio et al., 2019) for context — it can be cited, but it doesn't count as one of the 3 relationship papers
 - [ ] **Introduction (≤ 400 words)**: question; why a linear model (the `lead_time` slope and the `lead_time:hotel` coefficient + CI directly answer it); literature organised by theme; gap = price (not cancellations), city vs resort comparison; who benefits (hotel revenue managers setting early-booking discounts, travellers deciding when to book)
-- [ ] Own `references.bib` (APA) + in-text citations; with C, write the "compare to literature" sentences
+- [ ] Own the bibliography (the `bibliography-file` chunk near the top of `proposal.Rmd`, APA) + in-text citations; with C, write the "compare to literature" sentences
 
 ### 🅲 C — Cathy Zhong · Modelling & Diagnostics Lead
 - [ ] Preliminary model, e.g.

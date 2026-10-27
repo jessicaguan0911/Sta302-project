@@ -8,7 +8,7 @@ output:
   pdf_document:
     number_sections: true
 bibliography: references.bib
-csl: apa.csl
+csl: https://www.zotero.org/styles/apa
 ---
 
 ```{r setup, include=FALSE}
@@ -25,11 +25,62 @@ DATA_READY <- FALSE
 knitr::opts_chunk$set(eval = DATA_READY)
 ```
 
+```{r bibliography-file, eval=TRUE, include=FALSE}
+# ===== B: references (APA) =====
+# Quercus only accepts .pdf and .Rmd, so the bibliography lives here and is
+# written to references.bib each time the document is knitted.
+# Paste each BibTeX entry (Google Scholar -> Cite -> BibTeX) inside the quotes.
+writeLines(r"---(
+@article{antonio2019,
+  author  = {Antonio, Nuno and {de Almeida}, Ana and Nunes, Luis},
+  title   = {Hotel booking demand datasets},
+  journal = {Data in Brief},
+  volume  = {22},
+  pages   = {41--49},
+  year    = {2019},
+  doi     = {10.1016/j.dib.2018.11.126}
+}
+
+@misc{tidytuesday,
+  author       = {Mock, Thomas},
+  title        = {{Tidy Tuesday}: A weekly data project aimed at the {R} ecosystem},
+  year         = {2020},
+  howpublished = {\url{https://github.com/rfordatascience/tidytuesday/tree/master/data/2020/2020-02-11}},
+  note         = {Hotel bookings data, February 11, 2020}
+}
+
+@manual{rcore,
+  author       = {{R Core Team}},
+  title        = {R: A Language and Environment for Statistical Computing},
+  organization = {R Foundation for Statistical Computing},
+  address      = {Vienna, Austria},
+  year         = {2026},
+  url          = {https://www.R-project.org/}
+}
+
+@article{tidyverse,
+  author  = {Wickham, Hadley and Averick, Mara and Bryan, Jennifer and Chang, Winston and McGowan, Lucy D'Agostino and François, Romain and Grolemund, Garrett and Hayes, Alex and Henry, Lionel and Hester, Jim and Kuhn, Max and Pedersen, Thomas Lin and Miller, Evan and Bache, Stephan Milton and Müller, Kirill and Ooms, Jeroen and Robinson, David and Seidel, Dana Paige and Spinu, Vitalie and Takahashi, Kohske and Vaughan, Davis and Wilke, Claus and Woo, Kara and Yutani, Hiroaki},
+  title   = {Welcome to the {tidyverse}},
+  journal = {Journal of Open Source Software},
+  volume  = {4},
+  number  = {43},
+  pages   = {1686},
+  year    = {2019},
+  doi     = {10.21105/joss.01686}
+}
+)---", "references.bib")
+```
+
 ```{r load-clean, eval=TRUE}
 # ===== A: data cleaning =====
 # Read the untouched download, keep realised stays with valid prices,
 # recode categories, drop columns we can't use, and write the cleaned copy.
-raw <- read_csv("../data/raw/hotels.csv", show_col_types = FALSE)
+# Works with our repo layout, or with hotels.csv saved next to this Rmd
+# (e.g. the grader's download from our OneDrive folder).
+local_copy <- file.exists("hotels.csv")
+raw_path <- if (local_copy) "hotels.csv" else "../data/raw/hotels.csv"
+clean_path <- if (local_copy) "hotels_clean.csv" else "../data/clean/hotels_clean.csv"
+raw <- read_csv(raw_path, show_col_types = FALSE)
 
 # Step 1: keep realised stays only (cancelled bookings never paid this price).
 step1 <- raw %>% filter(is_canceled == 0)
@@ -63,7 +114,7 @@ clean <- step3 %>%
 row_counts <- c(raw = nrow(raw), realised = nrow(step1),
                 valid_stay = nrow(step2), final = nrow(clean))
 
-write_csv(clean, "../data/clean/hotels_clean.csv")
+write_csv(clean, clean_path)
 ```
 
 # Contributions {-}
@@ -235,4 +286,4 @@ ggplot(gantt, aes(y = task)) +
 
 # Bibliography {-}
 
-<!-- Filled automatically from references.bib (APA). B owns this. -->
+<!-- Filled automatically from the bibliography-file chunk at the top (APA). B owns it. -->

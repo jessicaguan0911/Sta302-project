@@ -41,7 +41,6 @@ Group problems must be emailed to sta302@course.utoronto.ca **≥ 5 business day
 │   └── clean/                    # produced by proposal.Rmd only
 ├── proposal/
 │   ├── proposal.Rmd              # THE submission: knits to the proposal PDF
-│   ├── references.bib            # APA citations
 │   └── figures/
 ├── poster/                       # Part 2
 └── reflections/                  # Part 3 (individual, optional to store here)
